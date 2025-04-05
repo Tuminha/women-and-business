@@ -1,0 +1,11 @@
+# Test files
+test-credentials.js
+
+# Environment files (handled by Vercel environment variables)
+.env
+.env.*
+
+# Development files
+README.md
+node_modules
+.git 
