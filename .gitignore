@@ -60,8 +60,7 @@ auth-credentials.json
 sendgrid.json
 test-credentials.js
 
-# temporarily ignore until sanitized
-vercel.json
+# vercel.json is now safe (no secrets)
 .env*.local
 
 # Large backup files
