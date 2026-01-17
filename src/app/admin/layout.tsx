@@ -43,6 +43,7 @@ export default function AdminLayout({
     { href: '/admin', label: 'Dashboard', icon: '📊' },
     { href: '/admin/posts', label: 'Posts', icon: '📝' },
     { href: '/admin/categories', label: 'Categorias', icon: '📁' },
+    { href: '/admin/comments', label: 'Comentarios', icon: '💬' },
     { href: '/admin/messages', label: 'Mensajes', icon: '✉️' },
   ];
 
