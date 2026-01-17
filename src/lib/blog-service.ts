@@ -1,537 +1,539 @@
-import { getSupabaseClient } from './supabase-client';
+import { readFile } from 'fs/promises'
+import { join } from 'path'
+import { getSupabaseClient, getSupabaseAdmin } from './supabase-client'
 
-export interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt?: string;
-  featuredImage?: string;
-  categoryId?: number;
-  authorId: number;
-  status: 'draft' | 'published';
-  publishedAt?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+// ============================================
+// Types
+// ============================================
+
+// Post type matching Supabase schema
+export interface Post {
+  id: number
+  title: string
+  slug: string
+  content: string
+  excerpt: string | null
+  featured_image: string | null
+  category_id: number | null
+  author_id: number
+  status: 'draft' | 'published'
+  published_at: string | null
+  created_at: string
+  updated_at: string
+  // Legacy WordPress fields (for JSON fallback compatibility)
+  date?: string
+  date_gmt?: string
+  comment_status?: string
+  ping_status?: string
+  password?: string
+  modified?: string
+  modified_gmt?: string
+  parent?: number
+  guid?: string
+  type?: string
+  mime_type?: string
+  comment_count?: number
 }
 
+// Category type matching Supabase schema
 export interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-  createdAt: Date;
+  id: number
+  name: string
+  slug: string
+  description: string | null
+  created_at: string
 }
 
+// CRUD Data Types
 export interface CreatePostData {
-  title: string;
-  content: string;
-  excerpt?: string;
-  featuredImage?: string;
-  categoryId?: number;
-  status?: 'draft' | 'published';
+  title: string
+  slug: string
+  content: string
+  excerpt?: string
+  featured_image?: string
+  category_id?: number
+  author_id: number
+  status: 'draft' | 'published'
+  published_at?: string
 }
 
 export interface UpdatePostData {
-  title?: string;
-  content?: string;
-  excerpt?: string;
-  featuredImage?: string;
-  categoryId?: number;
-  status?: 'draft' | 'published';
+  title?: string
+  slug?: string
+  content?: string
+  excerpt?: string
+  featured_image?: string
+  category_id?: number
+  status?: 'draft' | 'published'
+  published_at?: string
 }
 
-// Helper function to generate slug from title
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-    .trim();
+export interface CreateCategoryData {
+  name: string
+  slug: string
+  description?: string
 }
 
-// Blog post CRUD operations
-export async function createPost(authorId: number, postData: CreatePostData): Promise<BlogPost | null> {
+export interface UpdateCategoryData {
+  name?: string
+  slug?: string
+  description?: string
+}
+
+// ============================================
+// JSON Fallback (for development/migration)
+// ============================================
+
+let postsCache: Post[] | null = null
+let pagesCache: Post[] | null = null
+
+async function loadPostsFromJson(): Promise<Post[]> {
+  if (postsCache) {
+    return postsCache
+  }
+
   try {
-    const supabase = getSupabaseClient();
-    const { title, content, excerpt, featuredImage, categoryId, status = 'draft' } = postData;
-    
-    // Generate slug from title
-    const baseSlug = generateSlug(title);
-    
-    // Check if slug exists and make it unique if needed
-    let slug = baseSlug;
-    let counter = 1;
-    let slugExists = true;
-    
-    while (slugExists) {
-      const { data: existingPost } = await supabase
-        .from('blog_posts')
-        .select('id')
-        .eq('slug', slug)
-        .maybeSingle();
-      
-      if (!existingPost) {
-        slugExists = false;
-      } else {
-        slug = `${baseSlug}-${counter}`;
-        counter++;
-      }
-    }
-    
-    // Prepare published_at date if status is published
-    const publishedAt = status === 'published' ? new Date().toISOString() : null;
-    
-    // Insert post
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .insert({
-        title,
-        slug,
-        content,
-        excerpt: excerpt || null,
-        featured_image: featuredImage || null,
-        category_id: categoryId || null,
-        author_id: authorId,
-        status,
-        published_at: publishedAt
-      })
-      .select()
-      .single();
-    
-    if (error || !data) {
-      console.error('Create post error:', error);
-      return null;
-    }
-    
-    // Convert from snake_case to camelCase
-    return {
-      id: data.id,
-      title: data.title,
-      slug: data.slug,
-      content: data.content,
-      excerpt: data.excerpt,
-      featuredImage: data.featured_image,
-      categoryId: data.category_id,
-      authorId: data.author_id,
-      status: data.status as 'draft' | 'published',
-      publishedAt: data.published_at ? new Date(data.published_at) : undefined,
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at)
-    };
+    const filePath = join(process.cwd(), 'extracted_data', 'posts.json')
+    const fileContents = await readFile(filePath, 'utf-8')
+    const parsed = JSON.parse(fileContents)
+    postsCache = Array.isArray(parsed) ? parsed : []
+    return postsCache
   } catch (error) {
-    console.error('Create post error:', error);
-    return null;
+    console.error('Error loading posts from JSON:', error)
+    postsCache = []
+    return []
   }
 }
 
-export async function updatePost(postId: number, postData: UpdatePostData): Promise<BlogPost | null> {
+async function loadPages(): Promise<Post[]> {
+  if (pagesCache) {
+    return pagesCache
+  }
+
   try {
-    const supabase = getSupabaseClient();
-    const { title, content, excerpt, featuredImage, categoryId, status } = postData;
-    
-    // Build update object
-    const updates: any = { updated_at: new Date().toISOString() };
-    
-    if (title !== undefined) {
-      updates.title = title;
-      
-      // If title is updated, also update slug
-      updates.slug = generateSlug(title);
-    }
-    
-    if (content !== undefined) {
-      updates.content = content;
-    }
-    
-    if (excerpt !== undefined) {
-      updates.excerpt = excerpt;
-    }
-    
-    if (featuredImage !== undefined) {
-      updates.featured_image = featuredImage;
-    }
-    
-    if (categoryId !== undefined) {
-      updates.category_id = categoryId;
-    }
-    
-    if (status !== undefined) {
-      updates.status = status;
-      
-      // If status is changed to published and wasn't before, set published_at
-      if (status === 'published') {
-        const { data: currentPost } = await supabase
-          .from('blog_posts')
-          .select('status')
-          .eq('id', postId)
-          .single();
-        
-        if (currentPost && currentPost.status !== 'published') {
-          updates.published_at = new Date().toISOString();
-        }
-      }
-    }
-    
-    if (Object.keys(updates).length === 1 && updates.updated_at) {
-      // Nothing to update except updated_at
-      return await getPostById(postId);
-    }
-    
-    // Execute update
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .update(updates)
-      .eq('id', postId)
-      .select()
-      .single();
-    
-    if (error || !data) {
-      console.error('Update post error:', error);
-      return null;
-    }
-    
-    // Convert from snake_case to camelCase
-    return {
-      id: data.id,
-      title: data.title,
-      slug: data.slug,
-      content: data.content,
-      excerpt: data.excerpt,
-      featuredImage: data.featured_image,
-      categoryId: data.category_id,
-      authorId: data.author_id,
-      status: data.status as 'draft' | 'published',
-      publishedAt: data.published_at ? new Date(data.published_at) : undefined,
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at)
-    };
+    const filePath = join(process.cwd(), 'extracted_data', 'pages.json')
+    const fileContents = await readFile(filePath, 'utf-8')
+    const parsed = JSON.parse(fileContents)
+    pagesCache = Array.isArray(parsed) ? parsed : []
+    return pagesCache
   } catch (error) {
-    console.error('Update post error:', error);
-    return null;
+    console.error('Error loading pages:', error)
+    pagesCache = []
+    return []
   }
 }
 
-export async function getPostById(postId: number): Promise<BlogPost | null> {
+// ============================================
+// Post Functions
+// ============================================
+
+export async function getAllPosts(): Promise<Post[]> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
-      .eq('id', postId)
-      .single();
-    
-    if (error || !data) {
-      return null;
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+
+    if (error) {
+      console.error('Supabase error fetching posts:', error)
+      throw error
     }
-    
-    // Convert from snake_case to camelCase
-    return {
-      id: data.id,
-      title: data.title,
-      slug: data.slug,
-      content: data.content,
-      excerpt: data.excerpt,
-      featuredImage: data.featured_image,
-      categoryId: data.category_id,
-      authorId: data.author_id,
-      status: data.status as 'draft' | 'published',
-      publishedAt: data.published_at ? new Date(data.published_at) : undefined,
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at)
-    };
+
+    if (data && data.length > 0) {
+      return data as Post[]
+    }
+
+    // Fallback to JSON if Supabase returns empty (for migration period)
+    console.log('No posts in Supabase, falling back to JSON')
+    const jsonPosts = await loadPostsFromJson()
+    return jsonPosts.sort((a, b) => {
+      const dateA = new Date(a.date || a.created_at).getTime()
+      const dateB = new Date(b.date || b.created_at).getTime()
+      return dateB - dateA
+    })
   } catch (error) {
-    console.error('Get post by ID error:', error);
-    return null;
+    console.error('Error in getAllPosts, falling back to JSON:', error)
+    const jsonPosts = await loadPostsFromJson()
+    return jsonPosts.sort((a, b) => {
+      const dateA = new Date(a.date || a.created_at).getTime()
+      const dateB = new Date(b.date || b.created_at).getTime()
+      return dateB - dateA
+    })
   }
 }
 
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
       .eq('slug', slug)
-      .single();
-    
-    if (error || !data) {
-      return null;
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Supabase error fetching post by slug:', error)
+      throw error
     }
-    
-    // Convert from snake_case to camelCase
-    return {
-      id: data.id,
+
+    if (data) {
+      return data as Post
+    }
+
+    // Fallback to JSON
+    console.log('Post not found in Supabase, checking JSON fallback')
+    const jsonPosts = await loadPostsFromJson()
+    return jsonPosts.find((post) => post.slug === slug) || null
+  } catch (error) {
+    console.error('Error in getPostBySlug, falling back to JSON:', error)
+    const jsonPosts = await loadPostsFromJson()
+    return jsonPosts.find((post) => post.slug === slug) || null
+  }
+}
+
+export async function getPostById(id: number | string): Promise<Post | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('id', Number(id))
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Supabase error fetching post by id:', error)
+      throw error
+    }
+
+    if (data) {
+      return data as Post
+    }
+
+    // Fallback to JSON
+    const jsonPosts = await loadPostsFromJson()
+    return jsonPosts.find((post) => post.id === Number(id)) || null
+  } catch (error) {
+    console.error('Error in getPostById, falling back to JSON:', error)
+    const jsonPosts = await loadPostsFromJson()
+    return jsonPosts.find((post) => post.id === Number(id)) || null
+  }
+}
+
+export async function getPostsByCategory(categorySlug: string): Promise<Post[]> {
+  try {
+    const supabase = getSupabaseClient()
+
+    // First get the category by slug
+    const { data: category, error: categoryError } = await supabase
+      .from('categories')
+      .select('id')
+      .eq('slug', categorySlug)
+      .single()
+
+    if (categoryError && categoryError.code !== 'PGRST116') {
+      throw categoryError
+    }
+
+    if (!category) {
+      return []
+    }
+
+    // Then get posts by category_id
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('category_id', category.id)
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+
+    if (error) {
+      throw error
+    }
+
+    return (data || []) as Post[]
+  } catch (error) {
+    console.error('Error in getPostsByCategory:', error)
+    return []
+  }
+}
+
+export async function getFeaturedPost(): Promise<Post | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      throw error
+    }
+
+    if (data) {
+      return data as Post
+    }
+
+    // Fallback to first post from JSON
+    const posts = await getAllPosts()
+    return posts[0] || null
+  } catch (error) {
+    console.error('Error in getFeaturedPost:', error)
+    const posts = await getAllPosts()
+    return posts[0] || null
+  }
+}
+
+export async function getPostsByPage(page: number = 1, perPage: number = 10): Promise<{
+  posts: Post[]
+  total: number
+  totalPages: number
+  currentPage: number
+}> {
+  const allPosts = await getAllPosts()
+  const total = allPosts.length
+  const totalPages = Math.ceil(total / perPage)
+  const start = (page - 1) * perPage
+  const end = start + perPage
+  const posts = allPosts.slice(start, end)
+
+  return {
+    posts,
+    total,
+    totalPages,
+    currentPage: page,
+  }
+}
+
+export async function createPost(data: CreatePostData): Promise<Post> {
+  const supabase = getSupabaseAdmin()
+
+  const { data: post, error } = await supabase
+    .from('blog_posts')
+    .insert({
       title: data.title,
       slug: data.slug,
       content: data.content,
-      excerpt: data.excerpt,
-      featuredImage: data.featured_image,
-      categoryId: data.category_id,
-      authorId: data.author_id,
-      status: data.status as 'draft' | 'published',
-      publishedAt: data.published_at ? new Date(data.published_at) : undefined,
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at)
-    };
-  } catch (error) {
-    console.error('Get post by slug error:', error);
-    return null;
+      excerpt: data.excerpt || null,
+      featured_image: data.featured_image || null,
+      category_id: data.category_id || null,
+      author_id: data.author_id,
+      status: data.status,
+      published_at: data.status === 'published' ? (data.published_at || new Date().toISOString()) : null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error creating post:', error)
+    throw new Error(`Failed to create post: ${error.message}`)
   }
+
+  return post as Post
 }
 
-export async function getAllPosts(options: {
-  limit?: number;
-  offset?: number;
-  status?: 'draft' | 'published' | 'all';
-  categoryId?: number;
-  authorId?: number;
-} = {}): Promise<{ posts: BlogPost[]; total: number }> {
-  try {
-    const supabase = getSupabaseClient();
-    const {
-      limit = 10,
-      offset = 0,
-      status = 'published',
-      categoryId,
-      authorId
-    } = options;
-    
-    // Start building query
-    let query = supabase
-      .from('blog_posts')
-      .select('*', { count: 'exact' });
-    
-    // Apply filters
-    if (status !== 'all') {
-      query = query.eq('status', status);
-    }
-    
-    if (categoryId !== undefined) {
-      query = query.eq('category_id', categoryId);
-    }
-    
-    if (authorId !== undefined) {
-      query = query.eq('author_id', authorId);
-    }
-    
-    // Order by published_at or created_at
-    query = query.order('published_at', { ascending: false, nullsFirst: false });
-    
-    // Apply pagination
-    query = query.range(offset, offset + limit - 1);
-    
-    // Execute query
-    const { data, error, count } = await query;
-    
-    if (error) {
-      console.error('Get all posts error:', error);
-      return { posts: [], total: 0 };
-    }
-    
-    // Convert from snake_case to camelCase
-    const posts = data.map(post => ({
-      id: post.id,
-      title: post.title,
-      slug: post.slug,
-      content: post.content,
-      excerpt: post.excerpt,
-      featuredImage: post.featured_image,
-      categoryId: post.category_id,
-      authorId: post.author_id,
-      status: post.status as 'draft' | 'published',
-      publishedAt: post.published_at ? new Date(post.published_at) : undefined,
-      createdAt: new Date(post.created_at),
-      updatedAt: new Date(post.updated_at)
-    }));
-    
-    return { posts, total: count || 0 };
-  } catch (error) {
-    console.error('Get all posts error:', error);
-    return { posts: [], total: 0 };
+export async function updatePost(id: number | string, data: UpdatePostData): Promise<Post> {
+  const supabase = getSupabaseAdmin()
+
+  const updateData: any = {
+    ...data,
+    updated_at: new Date().toISOString()
   }
+
+  // If publishing, set published_at
+  if (data.status === 'published' && !data.published_at) {
+    updateData.published_at = new Date().toISOString()
+  }
+
+  const { data: post, error } = await supabase
+    .from('blog_posts')
+    .update(updateData)
+    .eq('id', Number(id))
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating post:', error)
+    throw new Error(`Failed to update post: ${error.message}`)
+  }
+
+  return post as Post
 }
 
-export async function deletePost(postId: number): Promise<boolean> {
-  try {
-    const supabase = getSupabaseClient();
-    
-    // Delete post
-    const { error } = await supabase
-      .from('blog_posts')
-      .delete()
-      .eq('id', postId);
-    
-    return !error;
-  } catch (error) {
-    console.error('Delete post error:', error);
-    return false;
+export async function deletePost(id: number | string): Promise<boolean> {
+  const supabase = getSupabaseAdmin()
+
+  const { error } = await supabase
+    .from('blog_posts')
+    .delete()
+    .eq('id', Number(id))
+
+  if (error) {
+    console.error('Error deleting post:', error)
+    throw new Error(`Failed to delete post: ${error.message}`)
   }
+
+  return true
 }
 
-// Category CRUD operations
+// ============================================
+// Category Functions
+// ============================================
+
 export async function getAllCategories(): Promise<Category[]> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('categories')
       .select('*')
-      .order('name');
-    
-    if (error || !data) {
-      return [];
+      .order('name', { ascending: true })
+
+    if (error) {
+      console.error('Supabase error fetching categories:', error)
+      throw error
     }
-    
-    // Convert from snake_case to camelCase
-    return data.map(category => ({
-      id: category.id,
-      name: category.name,
-      slug: category.slug,
-      description: category.description,
-      createdAt: new Date(category.created_at)
-    }));
+
+    return (data || []) as Category[]
   } catch (error) {
-    console.error('Get all categories error:', error);
-    return [];
+    console.error('Error in getAllCategories:', error)
+    return []
   }
 }
 
-export async function getCategoryById(categoryId: number): Promise<Category | null> {
+export async function getCategoryById(id: number | string): Promise<Category | null> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('categories')
       .select('*')
-      .eq('id', categoryId)
-      .single();
-    
-    if (error || !data) {
-      return null;
+      .eq('id', Number(id))
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      throw error
     }
-    
-    // Convert from snake_case to camelCase
-    return {
-      id: data.id,
+
+    return data as Category | null
+  } catch (error) {
+    console.error('Error in getCategoryById:', error)
+    return null
+  }
+}
+
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      throw error
+    }
+
+    return data as Category | null
+  } catch (error) {
+    console.error('Error in getCategoryBySlug:', error)
+    return null
+  }
+}
+
+export async function createCategory(data: CreateCategoryData): Promise<Category> {
+  const supabase = getSupabaseAdmin()
+
+  const { data: category, error } = await supabase
+    .from('categories')
+    .insert({
       name: data.name,
       slug: data.slug,
-      description: data.description,
-      createdAt: new Date(data.created_at)
-    };
-  } catch (error) {
-    console.error('Get category by ID error:', error);
-    return null;
+      description: data.description || null,
+      created_at: new Date().toISOString()
+    })
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error creating category:', error)
+    throw new Error(`Failed to create category: ${error.message}`)
   }
+
+  return category as Category
 }
 
-export async function createCategory(data: { name: string; description?: string }): Promise<Category | null> {
-  try {
-    const supabase = getSupabaseClient();
-    const { name, description } = data;
-    
-    // Generate slug
-    const slug = generateSlug(name);
-    
-    // Insert category
-    const { data: newCategory, error } = await supabase
-      .from('categories')
-      .insert({
-        name,
-        slug,
-        description: description || null
-      })
-      .select()
-      .single();
-    
-    if (error || !newCategory) {
-      console.error('Create category error:', error);
-      return null;
-    }
-    
-    // Convert from snake_case to camelCase
-    return {
-      id: newCategory.id,
-      name: newCategory.name,
-      slug: newCategory.slug,
-      description: newCategory.description,
-      createdAt: new Date(newCategory.created_at)
-    };
-  } catch (error) {
-    console.error('Create category error:', error);
-    return null;
+export async function updateCategory(id: number | string, data: UpdateCategoryData): Promise<Category> {
+  const supabase = getSupabaseAdmin()
+
+  const { data: category, error } = await supabase
+    .from('categories')
+    .update(data)
+    .eq('id', Number(id))
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating category:', error)
+    throw new Error(`Failed to update category: ${error.message}`)
   }
+
+  return category as Category
 }
 
-export async function updateCategory(categoryId: number, data: { name?: string; description?: string }): Promise<Category | null> {
-  try {
-    const supabase = getSupabaseClient();
-    const { name, description } = data;
-    
-    // Build update object
-    const updates: any = {};
-    
-    if (name !== undefined) {
-      updates.name = name;
-      
-      // If name is updated, also update slug
-      updates.slug = generateSlug(name);
-    }
-    
-    if (description !== undefined) {
-      updates.description = description;
-    }
-    
-    if (Object.keys(updates).length === 0) {
-      // Nothing to update
-      return await getCategoryById(categoryId);
-    }
-    
-    // Execute update
-    const { data: updatedCategory, error } = await supabase
-      .from('categories')
-      .update(updates)
-      .eq('id', categoryId)
-      .select()
-      .single();
-    
-    if (error || !updatedCategory) {
-      console.error('Update category error:', error);
-      return null;
-    }
-    
-    // Convert from snake_case to camelCase
-    return {
-      id: updatedCategory.id,
-      name: updatedCategory.name,
-      slug: updatedCategory.slug,
-      description: updatedCategory.description,
-      createdAt: new Date(updatedCategory.created_at)
-    };
-  } catch (error) {
-    console.error('Update category error:', error);
-    return null;
+export async function deleteCategory(id: number | string): Promise<boolean> {
+  const supabase = getSupabaseAdmin()
+
+  const { error } = await supabase
+    .from('categories')
+    .delete()
+    .eq('id', Number(id))
+
+  if (error) {
+    console.error('Error deleting category:', error)
+    throw new Error(`Failed to delete category: ${error.message}`)
   }
+
+  return true
 }
 
-export async function deleteCategory(categoryId: number): Promise<boolean> {
-  try {
-    const supabase = getSupabaseClient();
-    
-    // First update any posts with this category to have null category
-    await supabase
-      .from('blog_posts')
-      .update({ category_id: null })
-      .eq('category_id', categoryId);
-    
-    // Delete category
-    const { error } = await supabase
-      .from('categories')
-      .delete()
-      .eq('id', categoryId);
-    
-    return !error;
-  } catch (error) {
-    console.error('Delete category error:', error);
-    return false;
+// ============================================
+// Page Functions (for static pages)
+// ============================================
+
+export async function getPageBySlug(slug: string): Promise<Post | null> {
+  const pages = await loadPages()
+  return pages.find((page) => page.slug === slug) || null
+}
+
+// ============================================
+// Utility Functions
+// ============================================
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date)
+}
+
+export function getExcerpt(content: string, maxLength: number = 160): string {
+  const text = content
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (text.length <= maxLength) {
+    return text
   }
+
+  return text.substring(0, maxLength).trim() + '...'
 }
