@@ -4,8 +4,38 @@ test-credentials.js
 # Environment files (handled by Vercel environment variables)
 .env
 .env.*
+.env.local
 
 # Development files
-README.md
 node_modules
-.git 
+.git
+
+# Backup files (large)
+backup-*
+*.tar.gz
+temp_backup/
+
+# WordPress migration files (large)
+extracted_data/
+audit-results/
+Inspiration/
+
+# Scripts not needed in production
+scripts/
+*.py
+*.sql
+
+# Documentation (except README)
+MIGRATION_LOG.md
+MIGRATION_SUMMARY.md
+WORDPRESS_TO_NEXTJS_MIGRATION_GUIDE.md
+
+# Development config files
+.ralph/
+*.code-workspace
+
+# Large data files
+posts.json
+pages.json
+extracted_content.txt
+extracted_posts.sql

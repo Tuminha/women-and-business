@@ -31,13 +31,23 @@ export default async function HomePage() {
     return text.substring(0, maxLength).trim() + '...'
   }
 
-  function formatDate(dateString: string): string {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }).format(date)
+  function formatDate(dateString: string | undefined | null): string {
+    if (!dateString) return ''
+    try {
+      const date = new Date(dateString)
+      if (isNaN(date.getTime())) return ''
+      return new Intl.DateTimeFormat('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }).format(date)
+    } catch {
+      return ''
+    }
+  }
+
+  function getPostDate(post: any): string | undefined {
+    return post.published_at || post.date || post.created_at
   }
 
   const cleanTitle = (title: string) => title.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
@@ -235,7 +245,7 @@ export default async function HomePage() {
                   color: '#78716c',
                   marginBottom: '1rem'
                 }}>
-                  <span>{formatDate(featuredPost.date)}</span>
+                  <span>{formatDate(getPostDate(featuredPost))}</span>
                 </div>
                 
                 <p style={{
@@ -346,7 +356,7 @@ export default async function HomePage() {
                     color: '#a8a29e',
                     marginBottom: '0.75rem'
                   }}>
-                    📅 {formatDate(post.date)}
+                    📅 {formatDate(getPostDate(post))}
                   </div>
                   
                   <h3 style={{
