@@ -8,21 +8,24 @@ export async function generateMetadata() {
   }
 }
 
+// Helper to clean HTML from titles
+function cleanTitle(title: string): string {
+  return title.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 export default async function BlogPage() {
   // Fetch posts and categories with error handling
-  let posts = [];
-  let categories = [];
-  
+  let posts: any[] = [];
+  let categories: any[] = [];
+
   try {
-    const postsResult = await getAllPosts({ limit: 10 });
-    posts = postsResult.posts || [];
-    
-    const categoriesResult = await getAllCategories();
-    categories = categoriesResult || [];
-    
-    console.log("Successfully fetched data for blog page:", { 
-      postsCount: posts.length, 
-      categoriesCount: categories.length 
+    // getAllPosts() returns Post[] directly, not an object
+    posts = await getAllPosts();
+    categories = await getAllCategories();
+
+    console.log("Successfully fetched data for blog page:", {
+      postsCount: posts.length,
+      categoriesCount: categories.length
     });
   } catch (error) {
     console.error("Error fetching data for blog page:", error);
@@ -70,10 +73,14 @@ export default async function BlogPage() {
                 {posts.map(post => (
                   <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                     <div className="p-6">
-                      <h3 className="text-xl font-medium mb-2">{post.title}</h3>
-                      {post.publishedAt && (
+                      <h3 className="text-xl font-medium mb-2">{cleanTitle(post.title)}</h3>
+                      {(post.published_at || post.date || post.created_at) && (
                         <p className="text-sm text-gray-500 mb-3">
-                          {new Date(post.publishedAt).toLocaleDateString()}
+                          {new Date(post.published_at || post.date || post.created_at).toLocaleDateString('es-ES', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
                         </p>
                       )}
                       <p className="text-gray-600 mb-4">
