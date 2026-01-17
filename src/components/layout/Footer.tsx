@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Instagram, Linkedin, Mail } from 'lucide-react'
 
 const footerLinks = {
   navigation: [
@@ -19,67 +20,59 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="footer">
-      <div className="container">
+    <footer className="bg-gray-900 text-gray-300">
+      <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Main Footer Content */}
-        <div className="footer-grid">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {/* Brand Section */}
-          <div className="footer-brand">
-            <div className="footer-logo">
-              Woman <span style={{ color: 'var(--rose-400)' }}>&</span> Business
+          <div>
+            <div className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              Woman <span className="text-rose-400">&</span> Business
             </div>
-            <p className="footer-description">
-              Un espacio dedicado a todas las mujeres que buscan equilibrar su vida profesional 
+            <p className="text-gray-400 mb-6 leading-relaxed">
+              Un espacio dedicado a todas las mujeres que buscan equilibrar su vida profesional
               con su vida personal. Consejos de management, liderazgo, belleza y maternidad.
             </p>
             {/* Social Links */}
-            <div className="social-links">
+            <div className="flex gap-3">
               <a
                 href="https://www.instagram.com/mcudeiro/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-link"
+                className="w-10 h-10 bg-gray-800 hover:bg-rose-600 rounded-full flex items-center justify-center transition-colors"
                 aria-label="Instagram"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                </svg>
+                <Instagram className="w-5 h-5" />
               </a>
               <a
                 href="https://www.linkedin.com/in/mariacudeiro/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-link"
+                className="w-10 h-10 bg-gray-800 hover:bg-rose-600 rounded-full flex items-center justify-center transition-colors"
                 aria-label="LinkedIn"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-                  <rect x="2" y="9" width="4" height="12"/>
-                  <circle cx="4" cy="4" r="2"/>
-                </svg>
+                <Linkedin className="w-5 h-5" />
               </a>
-              <a 
-                href="mailto:contacto@womanandbusiness.com"
-                className="social-link"
+              <a
+                href="mailto:cudeiromaria@gmail.com"
+                className="w-10 h-10 bg-gray-800 hover:bg-rose-600 rounded-full flex items-center justify-center transition-colors"
                 aria-label="Email"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
+                <Mail className="w-5 h-5" />
               </a>
             </div>
           </div>
-          
+
           {/* Navigation Links */}
           <div>
-            <h4 className="footer-heading">Navegación</h4>
-            <ul className="footer-links">
+            <h4 className="text-white font-semibold mb-4 text-lg">Navegación</h4>
+            <ul className="space-y-3">
               {footerLinks.navigation.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-400 hover:text-rose-400 transition-colors"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -89,11 +82,14 @@ export function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="footer-heading">Categorías</h4>
-            <ul className="footer-links">
+            <h4 className="text-white font-semibold mb-4 text-lg">Categorías</h4>
+            <ul className="space-y-3">
               {footerLinks.categories.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-400 hover:text-rose-400 transition-colors"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -101,14 +97,14 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        
+
         {/* Bottom Bar */}
-        <div className="footer-bottom">
-          <p className="footer-copyright">
+        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-gray-500 text-sm">
             © {currentYear} Woman & Business. Todos los derechos reservados.
           </p>
-          <p className="footer-made-with">
-            Hecho con <span style={{ color: 'var(--rose-500)' }}>♥</span> para mujeres emprendedoras
+          <p className="text-gray-500 text-sm">
+            Hecho con <span className="text-rose-500">♥</span> para mujeres emprendedoras
           </p>
         </div>
       </div>
