@@ -63,3 +63,7 @@ test-credentials.js
 # temporarily ignore until sanitized
 vercel.json
 .env*.local
+
+# Large backup files
+backup-*.tar.gz
+backup-*/
