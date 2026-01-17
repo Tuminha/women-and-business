@@ -2,18 +2,24 @@ import Link from 'next/link';
 import { getPostsByCategory, getCategoryBySlug } from '@/lib/blog-service';
 import { notFound } from 'next/navigation';
 
+// Helper to clean HTML from titles
+function cleanTitle(title: string): string {
+  return title.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 // Generate metadata for the page
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   try {
-    const { category } = await getCategoryBySlug(params.slug);
-    
+    const { slug } = await params;
+    const category = await getCategoryBySlug(slug);
+
     if (!category) {
       return {
         title: 'Category Not Found - Woman and Business',
         description: 'The requested category could not be found.'
       };
     }
-    
+
     return {
       title: `${category.name} - Woman and Business Blog`,
       description: category.description || `Articles about ${category.name.toLowerCase()}`
@@ -27,15 +33,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   try {
-    const { category } = await getCategoryBySlug(params.slug);
-    
+    const { slug } = await params;
+    const category = await getCategoryBySlug(slug);
+
     if (!category) {
       notFound();
     }
-    
-    const { posts } = await getPostsByCategory(category.id);
+
+    // getPostsByCategory takes the slug, not the id
+    const posts = await getPostsByCategory(slug);
     
     return (
       <main className="flex min-h-screen flex-col items-center p-6">
@@ -59,10 +67,14 @@ export default async function CategoryPage({ params }: { params: { slug: string 
               {posts.map(post => (
                 <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                   <div className="p-6">
-                    <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                    {post.publishedAt && (
+                    <h2 className="text-xl font-semibold mb-2">{cleanTitle(post.title)}</h2>
+                    {(post.published_at || post.date || post.created_at) && (
                       <p className="text-sm text-gray-500 mb-3">
-                        {new Date(post.publishedAt).toLocaleDateString()}
+                        {new Date(post.published_at || post.date || post.created_at).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
                       </p>
                     )}
                     <p className="text-gray-600 mb-4">

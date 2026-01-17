@@ -8,10 +8,10 @@ const footerLinks = {
     { href: '/contacto', label: 'Contacto' },
   ],
   categories: [
-    { href: '/categoria/liderazgo', label: 'Liderazgo' },
-    { href: '/categoria/maternidad', label: 'Maternidad' },
-    { href: '/categoria/belleza', label: 'Belleza' },
-    { href: '/categoria/management', label: 'Management' },
+    { href: '/blog/category/liderazgo', label: 'Liderazgo' },
+    { href: '/blog/category/maternidad', label: 'Maternidad' },
+    { href: '/blog/category/belleza', label: 'Belleza' },
+    { href: '/blog/category/management', label: 'Management' },
   ],
 }
 
@@ -34,9 +34,9 @@ export function Footer() {
             </p>
             {/* Social Links */}
             <div className="social-links">
-              <a 
-                href="https://instagram.com" 
-                target="_blank" 
+              <a
+                href="https://www.instagram.com/mcudeiro/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="social-link"
                 aria-label="Instagram"
@@ -47,9 +47,9 @@ export function Footer() {
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
                 </svg>
               </a>
-              <a 
-                href="https://linkedin.com" 
-                target="_blank" 
+              <a
+                href="https://www.linkedin.com/in/mariacudeiro/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="social-link"
                 aria-label="LinkedIn"
