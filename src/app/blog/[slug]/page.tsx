@@ -3,6 +3,21 @@ import { getPostBySlug } from '@/lib/blog-service';
 import { notFound } from 'next/navigation';
 import Comments from '@/components/blog/Comments';
 
+// Helper to clean HTML from titles
+function cleanTitle(title: string): string {
+  return title.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+// Helper to get plain text excerpt
+function getPlainTextExcerpt(content: string, maxLength: number = 160): string {
+  const text = content
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
+}
+
 // Generate metadata for the page
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -17,8 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
 
     return {
-      title: `${post.title} - Woman & Business`,
-      description: post.excerpt || post.content?.substring(0, 160)
+      title: `${cleanTitle(post.title)} - Woman & Business`,
+      description: post.excerpt || getPlainTextExcerpt(post.content)
     };
   } catch (error) {
     console.error('Error generating metadata for blog post:', error);
@@ -59,7 +74,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </Link>
 
           <header className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-purple-800">{post.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-purple-800">{cleanTitle(post.title)}</h1>
 
             {formattedDate && (
               <p className="text-gray-600">Publicado el {formattedDate}</p>
@@ -70,7 +85,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <div className="mb-8">
               <img
                 src={post.featured_image}
-                alt={post.title}
+                alt={cleanTitle(post.title)}
                 className="w-full h-auto rounded-lg"
               />
             </div>
