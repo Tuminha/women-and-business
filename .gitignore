@@ -62,3 +62,4 @@ test-credentials.js
 
 # temporarily ignore until sanitized
 vercel.json
+.env*.local
