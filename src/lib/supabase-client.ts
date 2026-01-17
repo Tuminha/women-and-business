@@ -14,33 +14,51 @@ let supabaseAdminInstance: SupabaseClient | null = null;
 
 // Create "safe" function that returns a mock client during build/without env vars
 function createSafeClient(url?: string, key?: string, options?: any): SupabaseClient | MockSupabaseClient {
+  // Improved logging for debugging environment variables
+  if (!url) {
+    console.warn('Supabase URL is missing. Check NEXT_PUBLIC_SUPABASE_URL environment variable.');
+  }
+  if (!key) {
+    console.warn('Supabase key is missing. Check NEXT_PUBLIC_SUPABASE_ANON_KEY or SUPABASE_SERVICE_ROLE_KEY environment variable.');
+  }
+  
   // Prevent initialization during build or without correct env vars
   if (!url || !key || process.env.NODE_ENV === 'test') {
+    console.log('Creating mock Supabase client due to missing configuration or test environment');
+    
     // Return mock interface to prevent runtime errors
     return {
       from: () => ({
         select: () => ({
           eq: () => ({
-            single: () => ({ data: null, error: new Error('Supabase client not initialized') })
+            single: () => ({ data: null, error: new Error('Supabase client not initialized - missing configuration') })
           }),
-          order: () => ({ limit: () => ({ data: null, error: new Error('Supabase client not initialized') }) }),
-          maybeSingle: () => ({ data: null, error: new Error('Supabase client not initialized') })
+          order: () => ({ limit: () => ({ data: null, error: new Error('Supabase client not initialized - missing configuration') }) }),
+          maybeSingle: () => ({ data: null, error: new Error('Supabase client not initialized - missing configuration') })
         }),
         insert: () => ({
           select: () => ({
-            single: () => ({ data: null, error: new Error('Supabase client not initialized') })
+            single: () => ({ data: null, error: new Error('Supabase client not initialized - missing configuration') })
           })
         }),
         update: () => ({
-          eq: () => ({ data: null, error: new Error('Supabase client not initialized') })
+          eq: () => ({ data: null, error: new Error('Supabase client not initialized - missing configuration') })
         })
       }),
-      rpc: () => ({ data: null, error: new Error('Supabase client not initialized') })
+      rpc: () => ({ data: null, error: new Error('Supabase client not initialized - missing configuration') })
     };
   }
 
-  // Real client
-  return createClient(url, key, options);
+  // Debug log for successful initialization
+  console.log(`Creating real Supabase client with URL ${url.substring(0, 15)}...`);
+  
+  try {
+    // Real client
+    return createClient(url, key, options);
+  } catch (error) {
+    console.error('Error creating Supabase client:', error);
+    throw new Error(`Failed to initialize Supabase client: ${(error as Error).message}`);
+  }
 }
 
 // Safe getter for the normal client (anon key)
@@ -48,13 +66,21 @@ export function getSupabaseClient(): SupabaseClient {
   // Return existing instance if already created
   if (supabaseInstance) return supabaseInstance;
 
-  // Get environment variables
+  // Get environment variables with explicit logging
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  console.log('Initializing Supabase client with URL:', supabaseUrl ? `${supabaseUrl.substring(0, 15)}...` : 'missing');
+  console.log('Anon key available:', !!supabaseAnonKey);
 
-  // Create new instance
-  supabaseInstance = createSafeClient(supabaseUrl, supabaseAnonKey) as SupabaseClient;
-  return supabaseInstance;
+  try {
+    // Create new instance
+    supabaseInstance = createSafeClient(supabaseUrl, supabaseAnonKey) as SupabaseClient;
+    return supabaseInstance;
+  } catch (error) {
+    console.error('Failed to initialize Supabase client:', error);
+    throw new Error(`Supabase client initialization failed: ${(error as Error).message}`);
+  }
 }
 
 // Safe getter for the admin client (service role key)
@@ -68,19 +94,27 @@ export function getSupabaseAdmin(): SupabaseClient {
   // Return existing instance if already created
   if (supabaseAdminInstance) return supabaseAdminInstance;
 
-  // Get environment variables
+  // Get environment variables with explicit logging
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  console.log('Initializing Supabase admin client with URL:', supabaseUrl ? `${supabaseUrl.substring(0, 15)}...` : 'missing');
+  console.log('Service role key available:', !!supabaseServiceKey);
 
-  // Create new instance
-  supabaseAdminInstance = createSafeClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }) as SupabaseClient;
-
-  return supabaseAdminInstance;
+  try {
+    // Create new instance
+    supabaseAdminInstance = createSafeClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }) as SupabaseClient;
+    
+    return supabaseAdminInstance;
+  } catch (error) {
+    console.error('Failed to initialize Supabase admin client:', error);
+    throw new Error(`Supabase admin client initialization failed: ${(error as Error).message}`);
+  }
 }
 
 // Export default client for convenience

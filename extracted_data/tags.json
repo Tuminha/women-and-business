@@ -1,0 +1,219 @@
+[
+  {
+    "id": 3,
+    "name": "woman",
+    "slug": "woman",
+    "description": "",
+    "count": 3
+  },
+  {
+    "id": 4,
+    "name": "business",
+    "slug": "business",
+    "description": "",
+    "count": 4
+  },
+  {
+    "id": 5,
+    "name": "management",
+    "slug": "management",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 6,
+    "name": "belleza",
+    "slug": "belleza",
+    "description": "",
+    "count": 3
+  },
+  {
+    "id": 7,
+    "name": "empresa",
+    "slug": "empresa",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 8,
+    "name": "directivas",
+    "slug": "directivas",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 9,
+    "name": "ceoe",
+    "slug": "ceoe",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 10,
+    "name": "esade",
+    "slug": "esade",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 11,
+    "name": "beauty",
+    "slug": "beauty",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 12,
+    "name": "skincare",
+    "slug": "skincare",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 13,
+    "name": "cosmetics",
+    "slug": "cosmetics",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 14,
+    "name": "masks",
+    "slug": "masks",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 15,
+    "name": "creams",
+    "slug": "creams",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 16,
+    "name": "aesthetics",
+    "slug": "aesthetics",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 17,
+    "name": "vitaminac",
+    "slug": "vitaminac",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 18,
+    "name": "retinol",
+    "slug": "retinol",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 19,
+    "name": "dermatology",
+    "slug": "dermatology",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 20,
+    "name": "doctor",
+    "slug": "doctor",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 21,
+    "name": "pharmacy",
+    "slug": "pharmacy",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 22,
+    "name": "universkin",
+    "slug": "universkin",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 23,
+    "name": "#woman #business #leadership #skills #vuca #board #team #millenial",
+    "slug": "woman-business-leadership-skills-vuca-board-team-millenial",
+    "description": "",
+    "count": 5
+  },
+  {
+    "id": 24,
+    "name": "erotic",
+    "slug": "erotic",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 25,
+    "name": "capital",
+    "slug": "capital",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 26,
+    "name": "leadership",
+    "slug": "leadership",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 27,
+    "name": "workinggirl",
+    "slug": "workinggirl",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 28,
+    "name": "#covid19",
+    "slug": "covid19",
+    "description": "",
+    "count": 2
+  },
+  {
+    "id": 29,
+    "name": "erte",
+    "slug": "erte",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 30,
+    "name": "working",
+    "slug": "working",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 31,
+    "name": "crisis",
+    "slug": "crisis",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 32,
+    "name": "cosmética",
+    "slug": "cosmetica",
+    "description": "",
+    "count": 1
+  },
+  {
+    "id": 33,
+    "name": "ácido hialurónico",
+    "slug": "acido-hialuronico",
+    "description": "",
+    "count": 2
+  }
+]

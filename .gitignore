@@ -59,3 +59,6 @@ supabase-credentials.json
 auth-credentials.json
 sendgrid.json
 test-credentials.js
+
+# temporarily ignore until sanitized
+vercel.json

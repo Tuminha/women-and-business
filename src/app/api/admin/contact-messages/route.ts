@@ -5,7 +5,6 @@ import { verifyToken } from '@/lib/auth';
 // GET handler for retrieving contact messages (admin only)
 export async function GET(request: NextRequest) {
   try {
-    const { DB } = request.cf.env;
     const { searchParams } = new URL(request.url);
     
     // Verify admin authentication
@@ -42,7 +41,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') as 'unread' | 'read' | 'replied' | 'all' || 'all';
     
     // Get contact messages
-    const { messages, total } = await getAllContactMessages(DB, {
+    const { messages, total } = await getAllContactMessages({
       limit,
       offset,
       status

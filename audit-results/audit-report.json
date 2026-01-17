@@ -1,0 +1,102 @@
+{
+  "timestamp": "2026-01-05T19:16:02.133Z",
+  "backupLocation": "/Users/franciscoteixeirabarbosa/Dropbox/Random_scripts/woman-and-business-source/backup-1.5.2026_09-05-37_womanao0",
+  "checks": {
+    "backupExists": true,
+    "wordpressExists": true,
+    "databaseExists": true,
+    "uploadsExist": true
+  },
+  "stats": {
+    "uploads": {
+      "totalFiles": 1415,
+      "totalSize": 380901632,
+      "byType": {
+        ".jpg": 669,
+        ".jpeg": 57,
+        ".png": 679,
+        ".pdf": 1,
+        ".mp4": 1,
+        "no-extension": 2,
+        ".json": 4,
+        ".html": 1,
+        ".php": 1
+      },
+      "byYear": {
+        "2018": 496,
+        "2019": 412,
+        "2020": 445,
+        "2021": 21,
+        "2022": 33
+      }
+    },
+    "database": {
+      "tables": [
+        "_3YO_actionscheduler_actions",
+        "_3YO_actionscheduler_claims",
+        "_3YO_actionscheduler_groups",
+        "_3YO_actionscheduler_logs",
+        "_3YO_commentmeta",
+        "_3YO_comments",
+        "_3YO_embedpress_analytics_browser_info",
+        "_3YO_embedpress_analytics_content",
+        "_3YO_embedpress_analytics_milestones",
+        "_3YO_embedpress_analytics_referrers",
+        "_3YO_embedpress_analytics_views",
+        "_3YO_jetpack_sync_queue",
+        "_3YO_links",
+        "_3YO_monsterinsights_cache",
+        "_3YO_nfd_data_event_queue",
+        "_3YO_options",
+        "_3YO_postmeta",
+        "_3YO_posts",
+        "_3YO_term_relationships",
+        "_3YO_term_taxonomy",
+        "_3YO_termmeta",
+        "_3YO_terms",
+        "_3YO_usermeta",
+        "_3YO_users",
+        "_3YO_wpforms_logs",
+        "_3YO_wpforms_payment_meta",
+        "_3YO_wpforms_payments",
+        "_3YO_wpforms_tasks_meta",
+        "_3YO_yoast_indexable",
+        "_3YO_yoast_indexable_hierarchy",
+        "_3YO_yoast_migrations",
+        "_3YO_yoast_primary_term",
+        "_3YO_yoast_seo_links",
+        "_3YO_yoast_seo_meta"
+      ],
+      "posts": 0,
+      "pages": 0,
+      "categories": 1,
+      "tags": 0,
+      "authors": 1,
+      "comments": 3,
+      "media": 0
+    }
+  },
+  "issues": [],
+  "recommendations": [
+    {
+      "type": "media",
+      "priority": "high",
+      "message": "Copy 1415 media files (363.26 MB) to Next.js public directory"
+    },
+    {
+      "type": "feature",
+      "priority": "medium",
+      "message": "Consider migrating 3 comments or implementing new comment system (e.g., Supabase)"
+    },
+    {
+      "type": "structure",
+      "priority": "high",
+      "message": "Set up Next.js project structure with: /, /blog, /blog/[slug], /acerca-de-mi, /contacto, /categoria/[slug], /author/[slug]"
+    },
+    {
+      "type": "content",
+      "priority": "high",
+      "message": "Create migration script to extract WordPress content (XML export or direct SQL query) and convert to MDX"
+    }
+  ]
+}

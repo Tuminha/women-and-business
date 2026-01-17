@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "login": "admin",
+    "password": "$P$BVDNrLx.SZZBtgTnay55ISyzRfntrX0",
+    "nicename": "admin",
+    "email": "",
+    "url": "",
+    "registered": "2018-11-18 12:13:41",
+    "activation_key": "",
+    "status": 0,
+    "display_name": "admin"
+  },
+  {
+    "id": 2,
+    "login": "Maria Cudeiro",
+    "password": "$P$BkCzPfrPUfLmJ1I1WM2bAPvaYwPmq//",
+    "nicename": "maria-cudeiro",
+    "email": "cudeiromaria@gmail.com",
+    "url": "https://womanandbusiness.com/",
+    "registered": "2018-11-18 13:10:17",
+    "activation_key": "1542546618:$P$Bwv7lVzn.aFAmspbunLCHbxefrtnWh0",
+    "status": 0,
+    "display_name": "Maria Cudeiro"
+  }
+]

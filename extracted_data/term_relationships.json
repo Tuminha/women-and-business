@@ -1,0 +1,417 @@
+[
+  {
+    "object_id": 1,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 112,
+    "term_taxonomy_id": 2,
+    "term_order": 0
+  },
+  {
+    "object_id": 15,
+    "term_taxonomy_id": 2,
+    "term_order": 0
+  },
+  {
+    "object_id": 21,
+    "term_taxonomy_id": 2,
+    "term_order": 0
+  },
+  {
+    "object_id": 74,
+    "term_taxonomy_id": 5,
+    "term_order": 0
+  },
+  {
+    "object_id": 74,
+    "term_taxonomy_id": 4,
+    "term_order": 0
+  },
+  {
+    "object_id": 51,
+    "term_taxonomy_id": 2,
+    "term_order": 0
+  },
+  {
+    "object_id": 74,
+    "term_taxonomy_id": 3,
+    "term_order": 0
+  },
+  {
+    "object_id": 74,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 74,
+    "term_taxonomy_id": 6,
+    "term_order": 0
+  },
+  {
+    "object_id": 74,
+    "term_taxonomy_id": 7,
+    "term_order": 0
+  },
+  {
+    "object_id": 74,
+    "term_taxonomy_id": 8,
+    "term_order": 0
+  },
+  {
+    "object_id": 74,
+    "term_taxonomy_id": 9,
+    "term_order": 0
+  },
+  {
+    "object_id": 74,
+    "term_taxonomy_id": 10,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 11,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 4,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 3,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 12,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 13,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 14,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 15,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 16,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 17,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 18,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 19,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 20,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 21,
+    "term_order": 0
+  },
+  {
+    "object_id": 118,
+    "term_taxonomy_id": 22,
+    "term_order": 0
+  },
+  {
+    "object_id": 150,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 189,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 262,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 262,
+    "term_taxonomy_id": 23,
+    "term_order": 0
+  },
+  {
+    "object_id": 309,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 309,
+    "term_taxonomy_id": 4,
+    "term_order": 0
+  },
+  {
+    "object_id": 309,
+    "term_taxonomy_id": 3,
+    "term_order": 0
+  },
+  {
+    "object_id": 309,
+    "term_taxonomy_id": 24,
+    "term_order": 0
+  },
+  {
+    "object_id": 309,
+    "term_taxonomy_id": 25,
+    "term_order": 0
+  },
+  {
+    "object_id": 309,
+    "term_taxonomy_id": 26,
+    "term_order": 0
+  },
+  {
+    "object_id": 309,
+    "term_taxonomy_id": 27,
+    "term_order": 0
+  },
+  {
+    "object_id": 351,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 351,
+    "term_taxonomy_id": 23,
+    "term_order": 0
+  },
+  {
+    "object_id": 397,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 397,
+    "term_taxonomy_id": 23,
+    "term_order": 0
+  },
+  {
+    "object_id": 471,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 501,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 471,
+    "term_taxonomy_id": 23,
+    "term_order": 0
+  },
+  {
+    "object_id": 856,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 567,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 1030,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 890,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 669,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 725,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 1130,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 890,
+    "term_taxonomy_id": 28,
+    "term_order": 0
+  },
+  {
+    "object_id": 950,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 950,
+    "term_taxonomy_id": 4,
+    "term_order": 0
+  },
+  {
+    "object_id": 950,
+    "term_taxonomy_id": 29,
+    "term_order": 0
+  },
+  {
+    "object_id": 950,
+    "term_taxonomy_id": 30,
+    "term_order": 0
+  },
+  {
+    "object_id": 950,
+    "term_taxonomy_id": 31,
+    "term_order": 0
+  },
+  {
+    "object_id": 950,
+    "term_taxonomy_id": 28,
+    "term_order": 0
+  },
+  {
+    "object_id": 986,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 1030,
+    "term_taxonomy_id": 23,
+    "term_order": 0
+  },
+  {
+    "object_id": 1193,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 1193,
+    "term_taxonomy_id": 6,
+    "term_order": 0
+  },
+  {
+    "object_id": 1193,
+    "term_taxonomy_id": 32,
+    "term_order": 0
+  },
+  {
+    "object_id": 1193,
+    "term_taxonomy_id": 33,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 6,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 36,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 39,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 40,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 41,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 42,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 43,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 33,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 44,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 45,
+    "term_order": 0
+  },
+  {
+    "object_id": 1248,
+    "term_taxonomy_id": 46,
+    "term_order": 0
+  },
+  {
+    "object_id": 1369,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 1497,
+    "term_taxonomy_id": 47,
+    "term_order": 0
+  },
+  {
+    "object_id": 1532,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  },
+  {
+    "object_id": 1719,
+    "term_taxonomy_id": 1,
+    "term_order": 0
+  }
+]
