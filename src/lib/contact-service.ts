@@ -165,18 +165,134 @@ export async function deleteContactMessage(messageId: number): Promise<boolean> 
   }
 }
 
-// Email sending function (mock implementation)
+// Email sending function using SendGrid
 export async function sendEmail(to: string, subject: string, body: string): Promise<boolean> {
+  const sendgridApiKey = process.env.SENDGRID_API_KEY;
+
+  if (!sendgridApiKey) {
+    console.warn('SendGrid API key not configured, skipping email');
+    return true; // Return true to not block form submission
+  }
+
   try {
-    // In a real implementation, this would use an email service like SendGrid, Mailgun, etc.
-    console.log(`Sending email to: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`Body: ${body}`);
-    
-    // For now, we'll just log and return success
+    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${sendgridApiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: to }] }],
+        from: {
+          email: 'noreply@womanandbusiness.es',
+          name: 'Woman & Business'
+        },
+        reply_to: { email: to },
+        subject,
+        content: [
+          {
+            type: 'text/plain',
+            value: body
+          },
+          {
+            type: 'text/html',
+            value: body.replace(/\n/g, '<br>')
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('SendGrid error:', response.status, errorText);
+      return false;
+    }
+
+    console.log('Email sent successfully via SendGrid');
     return true;
   } catch (error) {
     console.error('Send email error:', error);
+    return false;
+  }
+}
+
+// Send email with reply-to set to the sender
+export async function sendContactNotification(
+  adminEmail: string,
+  senderName: string,
+  senderEmail: string,
+  message: string
+): Promise<boolean> {
+  const sendgridApiKey = process.env.SENDGRID_API_KEY;
+
+  if (!sendgridApiKey) {
+    console.warn('SendGrid API key not configured, skipping email notification');
+    return true;
+  }
+
+  try {
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #7c3aed; color: white; padding: 20px; text-align: center;">
+          <h1 style="margin: 0;">Woman & Business</h1>
+        </div>
+        <div style="padding: 30px; background-color: #f9fafb;">
+          <h2 style="color: #1f2937; margin-top: 0;">Nuevo mensaje de contacto</h2>
+          <p style="color: #4b5563;"><strong>De:</strong> ${senderName}</p>
+          <p style="color: #4b5563;"><strong>Email:</strong> <a href="mailto:${senderEmail}">${senderEmail}</a></p>
+          <div style="background-color: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
+            <p style="color: #1f2937; white-space: pre-wrap;">${message}</p>
+          </div>
+          <p style="color: #6b7280; font-size: 14px; margin-top: 20px;">
+            Responde directamente a este email para contactar con ${senderName}.
+          </p>
+        </div>
+        <div style="background-color: #1f2937; color: #9ca3af; padding: 15px; text-align: center; font-size: 12px;">
+          Este mensaje fue enviado desde el formulario de contacto de Woman & Business
+        </div>
+      </div>
+    `;
+
+    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${sendgridApiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: adminEmail }] }],
+        from: {
+          email: 'noreply@womanandbusiness.es',
+          name: 'Woman & Business - Contacto'
+        },
+        reply_to: {
+          email: senderEmail,
+          name: senderName
+        },
+        subject: `Nuevo mensaje de contacto de ${senderName}`,
+        content: [
+          {
+            type: 'text/plain',
+            value: `Nuevo mensaje de contacto:\n\nDe: ${senderName}\nEmail: ${senderEmail}\n\nMensaje:\n${message}\n\n---\nResponde directamente a este email para contactar con ${senderName}.`
+          },
+          {
+            type: 'text/html',
+            value: htmlContent
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('SendGrid error:', response.status, errorText);
+      return false;
+    }
+
+    console.log('Contact notification sent successfully via SendGrid');
+    return true;
+  } catch (error) {
+    console.error('Send contact notification error:', error);
     return false;
   }
 }
