@@ -11,8 +11,7 @@ const nextConfig = {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
-  // Use standalone output for better Vercel compatibility
-  output: 'standalone',
+  // Note: 'standalone' output is not needed for Vercel deployments
   // Disable image optimization during build
   images: {
     unoptimized: true,
