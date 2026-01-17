@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Mail, Linkedin } from 'lucide-react';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -143,7 +144,7 @@ export default function ContactPage() {
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white shadow-md rounded-lg p-6 text-center">
             <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">✉️</span>
+              <Mail className="w-6 h-6 text-purple-600" />
             </div>
             <h3 className="font-semibold text-gray-800 mb-1">Email</h3>
             <a href="mailto:cudeiromaria@gmail.com" className="text-purple-600 hover:underline">
@@ -153,7 +154,7 @@ export default function ContactPage() {
 
           <div className="bg-white shadow-md rounded-lg p-6 text-center">
             <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">💼</span>
+              <Linkedin className="w-6 h-6 text-purple-600" />
             </div>
             <h3 className="font-semibold text-gray-800 mb-1">LinkedIn</h3>
             <a
