@@ -5,8 +5,28 @@ export default async function HomePage() {
   const { posts, totalPages, total } = await getPostsByPage(1, 10)
   const [featuredPost, ...restPosts] = posts
 
-  // Extract image from post content
-  function extractImageUrl(content: string): string | null {
+  // Default placeholder for posts without images
+  const placeholderImage = '/images/placeholder-article.svg'
+
+  // Extract image from post content or featured_image
+  function extractImageUrl(post: any): string {
+    // First check if post has a featured_image
+    if (post.featured_image) {
+      const img = post.featured_image
+      if (img.includes('wp-content/uploads')) {
+        const uploadsMatch = img.match(/wp-content\/uploads\/(.+)/)
+        if (uploadsMatch) {
+          return `/uploads/${uploadsMatch[1]}`
+        }
+      }
+      if (img.startsWith('/') || img.startsWith('http')) {
+        return img
+      }
+      return `/uploads/${img}`
+    }
+
+    // Try to extract from content
+    const content = post.content || ''
     const imgMatch = content.match(/src=["']([^"']+\.(?:jpg|jpeg|png|gif|webp))[^"']*["']/i)
     if (imgMatch) {
       let url = imgMatch[1]
@@ -18,7 +38,9 @@ export default async function HomePage() {
       }
       return url
     }
-    return null
+
+    // Return placeholder
+    return placeholderImage
   }
 
   function getExcerpt(content: string, maxLength: number = 150): string {
@@ -195,9 +217,7 @@ export default async function HomePage() {
               {/* Image */}
               <div style={{
                 aspectRatio: '4/3',
-                background: extractImageUrl(featuredPost.content) 
-                  ? `url(${extractImageUrl(featuredPost.content)}) center/cover`
-                  : 'linear-gradient(135deg, #fecdd3 0%, #e7e5e4 100%)',
+                background: `url(${extractImageUrl(featuredPost)}) center/cover`,
                 minHeight: '280px'
               }} />
               
@@ -341,9 +361,7 @@ export default async function HomePage() {
                 {/* Image */}
                 <div style={{
                   aspectRatio: '16/10',
-                  background: extractImageUrl(post.content)
-                    ? `url(${extractImageUrl(post.content)}) center/cover`
-                    : 'linear-gradient(135deg, #ffe4e6 0%, #f5f5f4 100%)'
+                  background: `url(${extractImageUrl(post)}) center/cover`
                 }} />
                 
                 {/* Content */}
