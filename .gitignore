@@ -67,3 +67,6 @@ vercel.json
 # Large backup files
 backup-*.tar.gz
 backup-*/
+
+# Large media files
+*.mp4
