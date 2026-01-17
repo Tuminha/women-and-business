@@ -5,31 +5,31 @@ import { verifyToken } from '@/lib/auth';
 // GET handler for retrieving a single contact message (admin only)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { DB } = request.cf.env;
-    const messageId = parseInt(params.id, 10);
-    
+    const { id } = await params;
+    const messageId = parseInt(id, 10);
+
     // Verify admin authentication
     const token = request.cookies.get('auth_token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { success: false, message: 'Authentication required' },
         { status: 401 }
       );
     }
-    
+
     const { valid, payload } = verifyToken(token);
-    
+
     if (!valid || !payload) {
       return NextResponse.json(
         { success: false, message: 'Invalid or expired token' },
         { status: 401 }
       );
     }
-    
+
     // Check if user is admin
     if (payload.role !== 'admin') {
       return NextResponse.json(
@@ -37,23 +37,17 @@ export async function GET(
         { status: 403 }
       );
     }
-    
-    // Get contact message
-    const message = await getContactMessageById(DB, messageId);
-    
+
+    // Get message
+    const message = await getContactMessageById(messageId);
+
     if (!message) {
       return NextResponse.json(
         { success: false, message: 'Contact message not found' },
         { status: 404 }
       );
     }
-    
-    // If message is unread, mark as read
-    if (message.status === 'unread') {
-      await updateContactMessageStatus(DB, messageId, 'read');
-      message.status = 'read';
-    }
-    
+
     return NextResponse.json({ success: true, message });
   } catch (error) {
     console.error('Get contact message error:', error);
@@ -64,35 +58,35 @@ export async function GET(
   }
 }
 
-// PUT handler for updating contact message status (admin only)
+// PUT handler for updating a contact message's status (admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { DB } = request.cf.env;
+    const { id } = await params;
     const body = await request.json();
-    const messageId = parseInt(params.id, 10);
-    
+    const messageId = parseInt(id, 10);
+
     // Verify admin authentication
     const token = request.cookies.get('auth_token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { success: false, message: 'Authentication required' },
         { status: 401 }
       );
     }
-    
+
     const { valid, payload } = verifyToken(token);
-    
+
     if (!valid || !payload) {
       return NextResponse.json(
         { success: false, message: 'Invalid or expired token' },
         { status: 401 }
       );
     }
-    
+
     // Check if user is admin
     if (payload.role !== 'admin') {
       return NextResponse.json(
@@ -100,38 +94,38 @@ export async function PUT(
         { status: 403 }
       );
     }
-    
-    // Validate status
+
+    // Validate request body
     if (!body.status || !['unread', 'read', 'replied'].includes(body.status)) {
       return NextResponse.json(
-        { success: false, message: 'Invalid status' },
+        { success: false, message: 'Valid status (unread, read, or replied) is required' },
         { status: 400 }
       );
     }
-    
+
     // Check if message exists
-    const message = await getContactMessageById(DB, messageId);
-    
+    const message = await getContactMessageById(messageId);
+
     if (!message) {
       return NextResponse.json(
         { success: false, message: 'Contact message not found' },
         { status: 404 }
       );
     }
-    
+
     // Update message status
-    const success = await updateContactMessageStatus(DB, messageId, body.status);
-    
+    const success = await updateContactMessageStatus(messageId, body.status);
+
     if (!success) {
       return NextResponse.json(
         { success: false, message: 'Failed to update message status' },
         { status: 500 }
       );
     }
-    
+
     // Get updated message
-    const updatedMessage = await getContactMessageById(DB, messageId);
-    
+    const updatedMessage = await getContactMessageById(messageId);
+
     return NextResponse.json({
       success: true,
       message: updatedMessage,
@@ -149,31 +143,31 @@ export async function PUT(
 // DELETE handler for deleting a contact message (admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { DB } = request.cf.env;
-    const messageId = parseInt(params.id, 10);
-    
+    const { id } = await params;
+    const messageId = parseInt(id, 10);
+
     // Verify admin authentication
     const token = request.cookies.get('auth_token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { success: false, message: 'Authentication required' },
         { status: 401 }
       );
     }
-    
+
     const { valid, payload } = verifyToken(token);
-    
+
     if (!valid || !payload) {
       return NextResponse.json(
         { success: false, message: 'Invalid or expired token' },
         { status: 401 }
       );
     }
-    
+
     // Check if user is admin
     if (payload.role !== 'admin') {
       return NextResponse.json(
@@ -181,27 +175,27 @@ export async function DELETE(
         { status: 403 }
       );
     }
-    
+
     // Check if message exists
-    const message = await getContactMessageById(DB, messageId);
-    
+    const message = await getContactMessageById(messageId);
+
     if (!message) {
       return NextResponse.json(
         { success: false, message: 'Contact message not found' },
         { status: 404 }
       );
     }
-    
+
     // Delete message
-    const success = await deleteContactMessage(DB, messageId);
-    
+    const success = await deleteContactMessage(messageId);
+
     if (!success) {
       return NextResponse.json(
         { success: false, message: 'Failed to delete message' },
         { status: 500 }
       );
     }
-    
+
     return NextResponse.json({
       success: true,
       message: 'Message deleted successfully'
